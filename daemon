@@ -1,0 +1,31 @@
+#!/bin/bash
+# Deployment daemon
+# chkconfig: 345 20 80
+# description: Manages the komodo-web-deploy instance, basically just wraps "forever"
+# processname: ko-deploy
+
+DAEMON_PATH="/home/deployment/komodo-web-deploy"
+DAEMON="node server.js"
+NAME="ko-deploy"
+USER="nathanr" 
+
+case "$1" in
+start)
+    su $USER -c "$DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
+;;
+status)
+    forever list
+;;
+stop)
+    su $USER -c "$DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
+;;
+
+restart)
+    $0 stop
+    $0 start
+;;
+
+*)
+    echo "Usage: $0 {status|start|stop|restart}"
+    exit 1
+esac

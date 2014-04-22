@@ -1,0 +1,12 @@
+{
+  "name": "komodo-web-deploy",
+  "description": "Minimal deployment system for Komodo web apps",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "cron": "~1.0.4",
+    "winston": "~0.7.3",
+    "forever": "~0.11.0"
+  }
+}
