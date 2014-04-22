@@ -11,6 +11,8 @@ var server = new function()
     var queued = {};
     var app;
 
+    var githubIps = ["207.97.227.253","50.57.128.197","108.171.174.178"];
+
     // Run the logger, which dumps everything to stdout and deployment.log
     var logger = new winston.Logger({
         transports: [
@@ -104,6 +106,14 @@ var server = new function()
      */
     var routeHookPush = function(req, res)
     {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        if (githubIps.indexOf(ip) == -1)
+        {
+            logger.warn("Request from non-whitelisted ip: " + ip, req.body);
+            return res.send('');
+        }
+
         logger.info("Received push event");
 
         // Parse relevant info
