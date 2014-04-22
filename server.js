@@ -51,7 +51,7 @@ var server = new function()
         // Handle server related errors
         server.on("error", function (err)
         {
-            logger.error('there was an error:', err.message);
+            logger.error('express server error:', err.message);
         });
     };
 
