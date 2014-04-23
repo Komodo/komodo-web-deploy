@@ -7,7 +7,7 @@ var server = new function()
     var CronJob = require('cron').CronJob;
     var winston = require('winston');
 
-    var deploying = {};
+    var deploying = {active: false};
     var queued = {};
     var app;
 
@@ -17,7 +17,7 @@ var server = new function()
     var logger = new winston.Logger({
         transports: [
             new (winston.transports.Console)({ level: 'debug', colorize: true }),
-            new (winston.transports.File)({ filename: 'deployment.log', level: 'debug', json: false })
+            new (winston.transports.File)({ filename: __dirname + '/deployment.log', level: 'debug', json: false })
         ]
     });
 
@@ -149,7 +149,7 @@ var server = new function()
     var deploy = function(deployer)
     {
         // Add to queue if a deployment is already in progress for this repo+branch
-        if (deployer.name in deploying)
+        if (deployer.name in deploying || deploying.active)
         {
             logger.info("Queueing " + deployer.name);
             queued[deployer.name] = true;
@@ -158,6 +158,7 @@ var server = new function()
 
         logger.info("Deploying " + deployer.name);
         deploying[deployer.name] = true;
+        deploying.active = true;
 
         // Perform a git pull on the targeted deployment so we can execute
         // the latest version of deploy.js
@@ -183,6 +184,8 @@ var server = new function()
 
                 // All done, unblock this deployer
                 delete deploying[deployer.name];
+                deploying.active = false;
+
                 logger.info("Done deploying " + deployer.name);
 
                 // Run the job again if another deploy has
@@ -191,6 +194,11 @@ var server = new function()
                 {
                     delete queued[deployer.name];
                     deploy(deployer)
+                }
+                else
+                {
+                    for (deployer in queued) break;
+                    if (deployer) deploy(deployer);
                 }
             });
         });
