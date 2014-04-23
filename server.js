@@ -6,12 +6,15 @@ var server = new function()
     var exec    = require('child_process').exec;
     var CronJob = require('cron').CronJob;
     var winston = require('winston');
+    var request = require('request');
+    var range_check = require('range_check');
+
 
     var deploying = {active: false};
     var queued = {};
     var app;
 
-    var githubIps = ["207.97.227.253","50.57.128.197","108.171.174.178"];
+    var githubIpRanges = [ '192.30.252.0/22' ];
 
     // Run the logger, which dumps everything to stdout and deployment.log
     var logger = new winston.Logger({
@@ -36,6 +39,26 @@ var server = new function()
             app.use(express.json());
             app.use(express.urlencoded());
             app.use(express.multipart());
+        });
+
+        // Get Github IP ranges and bind routes
+        var options = {
+            url: 'https://api.github.com/meta',
+            headers: {'User-Agent': 'request'}
+        };
+        request(options, function(error, response, body)
+        {
+            if (error)
+            {
+                logger.error("Error retrieving github meta: " + error, response);
+                return;
+            }
+
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed && ("hooks" in bodyParsed))
+            {
+                githubIpRanges = bodyParsed.hooks;
+            }
         });
 
         // Bind our routes
@@ -106,12 +129,19 @@ var server = new function()
      */
     var routeHookPush = function(req, res)
     {
+        // Validate if the request is coming from github
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-        if (githubIps.indexOf(ip) == -1)
+        for (var x=0;x<githubIpRanges.length;x++)
         {
-            logger.warn("Request from non-whitelisted ip: " + ip, req.body);
-            return res.send('');
+            if (range_check.in_range(ip, githubIpRanges[x]))
+            {
+                break;
+            }
+            else if (x == githubIpRanges.length-1)
+            {
+                logger.warn("Request from non-whitelisted ip: " + ip, req.body);
+                return res.send('');
+            }
         }
 
         logger.info("Received push event");
