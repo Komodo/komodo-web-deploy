@@ -198,7 +198,11 @@ var server = new function()
                 else
                 {
                     for (deployer in queued) break;
-                    if (deployer) deploy(deployer);
+                    if (deployer)
+                    {
+                        delete queued[deployer.name];
+                        deploy(deployer);
+                    }
                 }
             });
         });
