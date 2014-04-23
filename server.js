@@ -152,7 +152,7 @@ var server = new function()
         if (deployer.name in deploying || deploying.active)
         {
             logger.info("Queueing " + deployer.name);
-            queued[deployer.name] = true;
+            queued[deployer.name] = deployer;
             return;
         }
 
@@ -189,11 +189,12 @@ var server = new function()
                 logger.info("Done deploying " + deployer.name);
 
                 // Run queued jobs
-                for (var queuedDeployer in queued) break;
-                if (queuedDeployer)
+                for (var queuedName in queued) break;
+                if (queuedName)
                 {
-                    logger.info("Running queued job: " + queuedDeployer.name, queuedDeployer);
-                    delete queued[queuedDeployer.name];
+                    var queuedDeployer = queued[queuedName];
+                    logger.info("Running queued job: " + queuedName, queuedDeployer);
+                    delete queued[queuedName];
                     deploy(queuedDeployer);
                 }
 
