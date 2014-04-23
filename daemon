@@ -12,10 +12,10 @@ USER="nathanr"
 case "$1" in
 start)
     su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever start $DAEMON_PATH/server.js"
+    $0 status
 ;;
 status)
-    source ~/.nvm/nvm.sh 
-    $DAEMON_PATH/node_modules/forever/bin/forever list
+    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever list"
 ;;
 stop)
     su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
