@@ -65,7 +65,7 @@ var server = new function()
         bindRoutes();
 
         // Bind schedulers
-        bindSchedulers();
+        //bindSchedulers();
 
         // Launch the server
         var server = app.listen(8282, function()
@@ -144,10 +144,10 @@ var server = new function()
             }
         }
 
-        logger.info("Received push event");
+        logger.info("Received push event", req.body);
 
         // Parse relevant info
-        var payload         = req.body;
+        var payload         = JSON.parse(req.body.payload);
         var repo            = payload.repository.name;
         var branch          = payload.ref.split("/").slice(-1).join("-");
         var deployerName    = [repo,branch].join("-");
