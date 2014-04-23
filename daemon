@@ -11,13 +11,14 @@ USER="nathanr"
 
 case "$1" in
 start)
-    su $USER -c "$DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
+    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever start $DAEMON_PATH/server.js"
 ;;
 status)
-    forever list
+    source ~/.nvm/nvm.sh 
+    $DAEMON_PATH/node_modules/forever/bin/forever list
 ;;
 stop)
-    su $USER -c "$DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
+    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
 ;;
 
 restart)
