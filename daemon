@@ -11,8 +11,7 @@ USER="nathanr"
 
 case "$1" in
 start)
-    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever start $DAEMON_PATH/server.js"
-    $0 status
+    $0 restart
 ;;
 status)
     su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever list"
@@ -23,7 +22,8 @@ stop)
 
 restart)
     $0 stop
-    $0 start
+    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever start $DAEMON_PATH/server.js"
+    $0 status
 ;;
 
 *)
