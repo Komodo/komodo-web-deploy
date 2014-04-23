@@ -188,22 +188,15 @@ var server = new function()
 
                 logger.info("Done deploying " + deployer.name);
 
-                // Run the job again if another deploy has
-                // been scheduled for this deployer
-                if (deployer.name in queued)
+                // Run queued jobs
+                for (var queuedDeployer in queued) break;
+                if (queuedDeployer)
                 {
-                    delete queued[deployer.name];
-                    deploy(deployer)
+                    logger.info("Running queued job: " + queuedDeployer.name, queuedDeployer);
+                    delete queued[queuedDeployer.name];
+                    deploy(queuedDeployer);
                 }
-                else
-                {
-                    for (deployer in queued) break;
-                    if (deployer)
-                    {
-                        delete queued[deployer.name];
-                        deploy(deployer);
-                    }
-                }
+
             });
         });
     };
@@ -217,3 +210,4 @@ var server = new function()
     init();
 
 }
+
