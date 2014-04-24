@@ -65,7 +65,7 @@ var server = new function()
         bindRoutes();
 
         // Bind schedulers
-        //bindSchedulers();
+        bindSchedulers();
 
         // Launch the server
         var server = app.listen(8282, function()
