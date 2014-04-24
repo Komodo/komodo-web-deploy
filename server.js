@@ -20,7 +20,7 @@ var server = new function()
     var logger = new winston.Logger({
         transports: [
             new (winston.transports.Console)({ level: 'debug', colorize: true }),
-            new (winston.transports.File)({ filename: __dirname + '/deployment.log', level: 'debug', json: false })
+            new (winston.transports.File)({ filename: __dirname + '/deployment.log', level: 'verbose', json: false })
         ]
     });
 
