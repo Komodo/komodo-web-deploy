@@ -8,7 +8,7 @@ var server = new function()
     var winston = require('winston');
     var request = require('request');
     var range_check = require('range_check');
-
+    var requireFresh = require('requirefresh').requireFresh;
 
     var deploying = {active: false};
     var queued = {};
@@ -102,9 +102,7 @@ var server = new function()
             if ( ! fs.existsSync(path + "/deploy.js")) continue;
 
             // Validate whether this deployerRunner has a schedule method
-            if (require.resolve(path + "/deploy.js") in require.cache)
-                delete require.cache[require.resolve(path + "/deploy.js")];
-            var deployerRunner = require(path + "/deploy.js");
+            var deployerRunner = requireFresh(path + "/deploy.js");
             if ( ! ("schedule" in deployerRunner)) continue;
 
             deployerRunner.init(logger);
@@ -205,9 +203,7 @@ var server = new function()
             }
 
             // Invoke the actual deployment script
-            if (require.resolve(deployer.path + "/deploy.js") in require.cache)
-                delete require.cache[require.resolve(deployer.path + "/deploy.js")];
-            var deployerRunner = require(deployer.path + "/deploy.js");
+            var deployerRunner = requireFresh(deployer.path + "/deploy.js");
             deployerRunner.init(logger);
             deployerRunner.run(deployer, function(err)
             {
