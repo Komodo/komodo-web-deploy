@@ -102,6 +102,8 @@ var server = new function()
             if ( ! fs.existsSync(path + "/deploy.js")) continue;
 
             // Validate whether this deployerRunner has a schedule method
+            if (require.resolve(path + "/deploy.js") in require.cache)
+                delete require.cache[require.resolve(path + "/deploy.js")];
             var deployerRunner = require(path + "/deploy.js");
             if ( ! ("schedule" in deployerRunner)) continue;
 
@@ -203,6 +205,8 @@ var server = new function()
             }
 
             // Invoke the actual deployment script
+            if (require.resolve(deployer.path + "/deploy.js") in require.cache)
+                delete require.cache[require.resolve(deployer.path + "/deploy.js")];
             var deployerRunner = require(deployer.path + "/deploy.js");
             deployerRunner.init(logger);
             deployerRunner.run(deployer, function(err)
