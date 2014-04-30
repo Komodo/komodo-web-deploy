@@ -144,7 +144,7 @@ var server = new function()
             }
         }
 
-        logger.info("Received push event", req.body);
+        logger.info("Received push event");
 
         // Parse relevant info
         var payload         = JSON.parse(req.body.payload);
@@ -192,7 +192,7 @@ var server = new function()
 
         // Perform a git pull on the targeted deployment so we can execute
         // the latest version of deploy.js
-        exec('cd "'+deployer.path+'" && git pull', function(err, stdo, stde)
+        exec('cd "'+deployer.path+'" && git reset --hard HEAD && git pull', function(err, stdo, stde)
         {
             logger.debug(stdo);
 
