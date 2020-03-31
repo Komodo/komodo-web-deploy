@@ -4,25 +4,24 @@
 # description: Manages the komodo-web-deploy instance, basically just wraps "forever"
 # processname: ko-deploy
 
-DAEMON_PATH="/home/deployment/komodo-web-deploy"
+DAEMON_PATH="/deployment/komodo-web-deploy"
 DAEMON="node server.js"
 NAME="ko-deploy"
-USER="nathanr" 
 
 case "$1" in
 start)
     $0 restart
 ;;
 status)
-    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever list"
+    "$DAEMON_PATH/node_modules/forever/bin/forever list"
 ;;
 stop)
-    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
+    "$DAEMON_PATH/node_modules/forever/bin/forever stop $DAEMON_PATH/server.js"
 ;;
 
 restart)
     $0 stop
-    su $USER -c "source ~/.nvm/nvm.sh && $DAEMON_PATH/node_modules/forever/bin/forever start $DAEMON_PATH/server.js"
+    "$DAEMON_PATH/node_modules/forever/bin/forever start $DAEMON_PATH/server.js"
     $0 status
 ;;
 
